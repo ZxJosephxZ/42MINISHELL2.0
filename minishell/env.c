@@ -35,10 +35,10 @@ char	*mini_getenv(char *var, char **envp, int n)
 	return NULL;
 }
 
-char	*mini_setenv(char *var, char *value, char **envp, int n)
+char	**mini_setenv(char *var, char *value, char **envp, int n)
 {
 	int i[2];
-	char *aux;
+	char *aux[2];
 
 	if (n < 0)
 		n = ft_strlen(var);
@@ -61,4 +61,72 @@ char	*mini_setenv(char *var, char *value, char **envp, int n)
 	envp = ft_extend_matrix(envp, aux[1]);
 	free(aux[1]);
 	return (envp);
+}
+
+static	int 	var_in_envp(char *argc, char **envp, int ij[2])
+{
+	int	pos;
+
+	ij[1] = 0;
+	pos = ft_strchr_i(argc, '=');
+	if (pos == -1)
+		return (-1);
+	while (envp[ij[1]])
+	{
+		if (!ft_strncmp(envp[ij[1]], argc, pos + 1))
+			return (1);
+		ij[1]++;
+	}
+	return (0);
+}
+
+int	mini_export(t_prompt *prompt)
+{
+	int	ij[2];
+	int	pos;
+	char	**argc;
+
+	argc = ((t_mini *)prompt->cmds->content)->full_cmd;
+	if (ft_matrixlen(argc) >= 2)
+	{
+		ij[0] = 1;
+		while (argc[ij[0]])
+		{
+			pos = car_in_envp(argc[ij[0]], prompt->envp, ij);
+			if (pos == 1)
+			{
+				free(prompt->envp[ij[1]]);
+				prompt->envp[ij[1]] = ft_strdup(argc[ij[0]]);
+			}
+			else if (!pos)
+				prompt->envp = ft_extend_matrix(prompt->envp, argc[ij[0]]);
+			ij[0]++;
+		}
+	}
+	return (0);
+}
+
+int	mini_unset(t_prompt *prompt)
+{
+	char	**argc;
+	char	*aux;
+	int	ij[2];
+
+	ij[0] = 0;
+	argc = ((t_mini *)prompt->cmds->content)->full_cmd;
+	if (ft_matrixlen(argc) >= 2)
+	{
+		while (argc[++ij[0]])
+		{
+			if (argc[++ij[0]][ft_strlen(argc[ij[0]]) -1] != '=')
+			{
+				aux = ft_strjoin(argc[ij[0]], "=");
+				free(argc[ij[0]]);
+				argc[ij[0]] = aux;
+			}
+			if (var_in_envp(argc[ij[0]], prompt->envp, ij))
+				ft_matrix_replace_in(&prompt->envp, NULL, ij[1]);
+		}
+	}
+	return (0);
 }
