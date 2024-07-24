@@ -6,7 +6,7 @@
 /*   By: jpajuelo <jpajuelo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/10 10:01:13 by jpajuelo          #+#    #+#             */
-/*   Updated: 2024/07/10 12:54:03 by jpajuelo         ###   ########.fr       */
+/*   Updated: 2024/07/24 14:02:13 by jpajuelo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,8 @@ static char *get_home(t_prompt prompt)
 	return (pwd);
 }
 
+//ESto no es necesario pero cualquier persona que ejecute esta minishell en su computadora tendra su propio nombre de host y su ruta correspondiente
+
 static char *get_user(t_prompt prompt)
 {
 	char	**user;
@@ -50,7 +52,9 @@ static char *get_user(t_prompt prompt)
 
 	user = NULL;
 	temp2 = NULL;
+	//ejecutamos whoami para saber el nombre del host y concatenar con los demas directorios y lo guardamos en user
 	exec_customer(&user, "/usr/bin/whoami", "whoami", prompt.envp);
+	//el nombre por defecto guest
 	if (!user)
 		user = ft_extend_matrix(user, "guest");
 	if (!ft_strncmp(user[0], "root", 4))
