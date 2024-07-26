@@ -6,7 +6,7 @@
 /*   By: jpajuelo <jpajuelo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/09 12:28:56 by jpajuelo          #+#    #+#             */
-/*   Updated: 2024/07/24 13:48:24 by jpajuelo         ###   ########.fr       */
+/*   Updated: 2024/07/25 12:22:02 by jpajuelo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,11 +115,14 @@ int main(int arc, char **argc, char **env)
 		signal(SIGQUIT, SIG_IGN);
 		//Esto es para marcar la ruta al iniciar el programa, simulando las acciones de bash.
 		str = mini_getprompt(prompt);
+		//habra dos opciones de mensaje en caso de no tener permisos para obtener la ruta o un pillo nos quite variable de entorno
+		//se obtara por un guestminishell
 		if (str)
 			out = readline(str);
 		else
 			out = readline("guest@minishell");
 		free(str);
+		//parseo
 		if (!check_args(out, &prompt))
 			break;
 	}

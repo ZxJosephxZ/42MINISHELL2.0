@@ -6,7 +6,7 @@
 /*   By: jpajuelo <jpajuelo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/10 11:14:27 by jpajuelo          #+#    #+#             */
-/*   Updated: 2024/07/10 14:23:58 by jpajuelo         ###   ########.fr       */
+/*   Updated: 2024/07/25 13:59:53 by jpajuelo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,8 @@ static	char	**split_all(char **argc, t_prompt *prompt)
 	int	quotes[2];
 
 	i = -1;
+	//recorremos la matriz pero ojo cada posicion es un string entero de la matriz
+	//{"caso0  ", "caso1  ", "caso2 "}
 	while (argc && argc[++i])
 	{
 		argc[i] = expand_vars(argc[i], -1, quotes, prompt);
@@ -39,7 +41,7 @@ static	void	*parse_args(char **argc, t_prompt *prompt)
 	int i;
 
 	is_exit = 0;
-	prompt->cmds = fil_nodes(split_all(argc, prompt), -1);
+	prompt->cmds = fill_nodes(split_all(argc, prompt), -1);
 	if (!prompt->cmds)
 		return (prompt);
 	i = ft_lstsize(prompt->cmds);
@@ -69,14 +71,20 @@ void	*check_args(char *out, t_prompt *prompt)
 		printf("exit\n");
 		return (NULL);
 	}
+	//añadimos el historial en caso del que prompt no este vacio
 	if (out[0] != '\0')
 		add_history(out);
+	//procedimientos para obtener la matriz de comandos, con la comprobacion de entre comillado y separado por espacios
 	a = ft_cmdtrim(out, " ");
+	//ya no necesitamos el prompt
 	free(out);
+	//si la matriz es null es porque ha ocurrido un error de entre comillado por tanto llamamos y indicamos el error
 	if (!a)
 		mini_perror(QUOTE, NULL, 1);
+	//y retornamos el vacio
 	if (!a)
 		return ("");
+	//
 	prompt = parse_args(a, prompt);
 	if (prompt && prompt->cmds)
 		n = prompt->cmds->content;
